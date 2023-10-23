@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#folderUpload {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+#folderUpload-formBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 70%;
+    max-width: 800px;
+    padding: 45px 40px;
+    border: 1px solid rgb(132, 62, 183);
+    border-radius: 3px;
+}
+
+#folderUpload-inputButton {
+    margin: 0px !important;
+}
+
+#folderUpload-submitButton {
+    color: white;
+    background-color: rgb(132, 62, 183);
+    padding: 5px 5px;
+    width: 100%;
+    border-radius: 5px;
+}
+
+#folderUpload-bgRemovalOption {
+    display: flex;
+    align-items: center;
+    gap: 10px
+}
