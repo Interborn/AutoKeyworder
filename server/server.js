@@ -19,24 +19,19 @@ const upload = multer({
 });
 
 // Function to call the Python script for keyword generation
-async function generateKeywordsAndQuality(imagePath) {
+async function runPythonScript(scriptPath, imagePath) {
   return new Promise((resolve, reject) => {
-    const pythonScriptPath = './server/everyPixelAPI.py';
-    exec(`python ${pythonScriptPath} ${imagePath}`, (error, stdout, stderr) => {
+    exec(`python ${scriptPath} ${imagePath}`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing the Python script: ${error}`);
         reject(error);
       } else {
-        const [keywords, qualityScore] = stdout.replace(/\r\n/g, '').split('|');
-        console.log(`stdout: Keywords: ${keywords}, Quality Score: ${qualityScore}`);
-        console.error(`stderr: ${stderr}`);
-        resolve({ keywords: keywords.trim(), qualityScore });
+        resolve(stdout.trim());
       }
     });
   });
 }
 
-// Define a route for handling GET requests
 app.get('/', (req, res) => {
   console.log('Request received: GET /');
   res.send('Hello, world!');
@@ -49,15 +44,17 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
   console.log('Starting image upscaling...');
   upscaleImages(uploadedFiles);
 
-  // Update server/photoList.json for each uploaded file
-  uploadedFiles.forEach(async (file, index) => {
+  for (const file of uploadedFiles) {
     const imagePath = `./server/uploads/${file.originalname}`;
-    const { keywords, qualityScore } = await generateKeywordsAndQuality(imagePath);
+    
+    const keywords = await runPythonScript('./server/getKeywords.py', imagePath);
+    const qualityScore = await runPythonScript('./server/getQuality.py', imagePath);
+    const title = await runPythonScript('./server/getTitle.py', imagePath);
 
-    const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2); // Calculate file size in megabytes
+    const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
 
     const fileObject = {
-      // generatedFilename: title,
+      generatedFilename: title,
       originalFilename: file.originalname,
       keywords: keywords,
       qualityScore: qualityScore,
@@ -84,7 +81,7 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
     }
 
     fs.writeFileSync('server/photoList.json', JSON.stringify(photoList, null, 2), 'utf8');
-  });
+  }
 
   console.log('All file information updated in photoList.json');
   res.status(200).send('Folder uploaded successfully.');
