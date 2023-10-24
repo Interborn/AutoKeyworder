@@ -9,17 +9,25 @@ library.add(uncheckedSquare, checkedSquare);
 
 function App() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isUpscaled, setIsUpscaled] = useState(false);
+  const [isTitleSet, setIsTitleSet] = useState(false);
   const serverOrigin = `${window.location.protocol}//${window.location.hostname}:3001`;
   
   const handleSubmit = async (event) => {
     event.preventDefault();
     
     const formData = new FormData(event.target);
+    // Set isUpscaled based on the checkbox value
+    const upscaleImages = formData.get('upscaleImages') === 'true';
+    setIsUpscaled(upscaleImages);
+    const titleSet = formData.get('genTitle') === 'true';
+    setIsTitleSet(titleSet);
+    
     try {
       const response = await fetch('http://localhost:3001/uploads', {
         method: 'POST',
         body: formData,
-      });
+     });
   
       if (response.ok) {
         if (response.ok) {
@@ -93,16 +101,40 @@ function App() {
       </div>
 
       <div className="w-[100%] flex justify-center;">
-        <ul id="liveLookList">
-          {uploadedFiles.map((file, index) => (
-            <li key={index}>
-              <img src={`${serverOrigin}/upscaled/${file.sanitizedTitle}.jpg`} alt={file.generatedFilename} width="100" height="100" />
-              <span>Title: {file.generatedFilename}</span>
-              <span>Size: {file.filesize}</span>
-              <span>Quality Score: {file.qualityScore}</span>
-              <span>Keywords: {file.keywords}</span>
-            </li>
-          ))}
+        <ul id="liveLookList" className="flex flex-col w-full h-full gap-5">
+          {uploadedFiles.map((file, index) => {
+            // Debug: Print out the image URL
+            const imageUrl = 
+            `${serverOrigin}${isUpscaled ? '/upscaled' : '/uploads'}/${isUpscaled && isTitleSet ? `${file.sanitizedTitle}.jpg` : `${file.originalFilename}`}`;
+            console.log(`Image URL: ${imageUrl}`);
+
+            return (
+              <li key={index} className="flex gap-5 mx-5">
+                {/* ...existing JSX */}
+                <div className="w-full max-w-[360px]">
+                  <img src={imageUrl} alt={file.generatedFilename} className="object-cover w-full h-full max-w-[360px] max-h-[230px] -mb-[1.38em] rounded-md" />
+
+                  <span className="bg-white">Size: {isUpscaled ? file.upscaledFilesize : file.filesize}</span>
+                </div>
+
+              
+                <div className="flex flex-col justify-evenly">
+                  <span>
+                    <span className="font-bold">Title:</span> <span>{file.generatedFilename}</span>
+                  </span>
+                  <span>
+                    <span className="font-bold">Quality Score:</span>
+                    <span>{file.qualityScore}</span>
+                  </span>
+                  <span className="pb-10">
+                    <span className="font-bold">Keywords:</span>
+                    <span>{file.keywords}</span>
+                  </span>
+                </div>
+
+              </li>
+            );
+          })}
         </ul>
       </div>
 

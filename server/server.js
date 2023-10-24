@@ -4,6 +4,7 @@ const cors = require('cors');
 const { fileFilter, storage, upscaleImage } = require('./imageFunctions');
 const fs = require('fs');
 const { exec } = require('child_process');
+const path = require('path');
 
 // Create an Express app
 const app = express();
@@ -24,6 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/upscaled', express.static('server/upscaled'));
+app.use('/uploads', express.static('server/uploads'));
 
 // Configure multer for handling file uploads
 const upload = multer({
@@ -66,9 +68,9 @@ app.get('/', (req, res) => {
   res.send('Hello, world!');
 });
 
-app.get('/photoList', (req, res) => {
+app.get('/photoList', async (req, res) => {  // Added async
   try {
-    const photoListData = fs.readFileSync('server/photoList.json', 'utf8');
+    const photoListData = await fs.promises.readFile('server/photoList.json', 'utf8');  // Changed this line
     res.status(200).json(JSON.parse(photoListData));
   } catch (error) {
     console.error('Error reading photoList.json:', error);
@@ -87,14 +89,12 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
 
   const { genTitle, genKeyword, genQuality, useFilenames, upscaleImages } = req.body;
 
-  // Initialize variables outside of conditionals
-  let keywords = 'n/a';
-  let title = 'n/a';
-  let qualityScore = 'n/a';
-  let sanitizedTitle = '';
-  
   for (const file of uploadedFiles) {
     const imagePath = `./server/uploads/${file.originalname}`;
+    let sanitizedTitle = '';
+    let keywords = 'n/a';
+    let title = 'n/a';
+    let qualityScore = 'n/a';
     
     if (genKeyword === "true") {
       keywords = await runPythonScript('./server/getKeywords.py', imagePath);
@@ -105,12 +105,8 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
     if (genTitle === "true") {
       title = await runPythonScript('./server/getTitle.py', imagePath, useFilenames);
       sanitizedTitle = sanitizeTitle(title);
-    }    
-    if (upscaleImages === "true") {
-      await upscaleImage(file, sanitizedTitle);
     }
-
-    const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
     
     const fileObject = {
       generatedFilename: title,
@@ -119,18 +115,31 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       qualityScore: qualityScore,
       filesize: fileSizeInMB + ' MB',
       filepath: `/uploads/${file.originalname}`,
-      upscaledFilepath: `/upscaled/${sanitizedTitle}.jpg`,
+      upscaledFilepath: '',
       sanitizedTitle: sanitizedTitle,
     };
     
+    if (upscaleImages === "true") {
+      let upscaledName = genTitle === "true" ? sanitizedTitle : path.parse(file.originalname).name;
+      await upscaleImage(file, upscaledName);
+
+      // Get the size of the upscaled image 
+      const upscaledStats = await fs.promises.stat(`./server/upscaled/${upscaledName}.jpg`);
+      const upscaledSizeInMB = (upscaledStats.size / (1024 * 1024)).toFixed(2);
+
+      // Update the fileObject
+      fileObject.upscaledFilesize = upscaledSizeInMB + ' MB';
+      fileObject.upscaledFilepath = `/upscaled/${upscaledName}.jpg`;
+    }
+    
     let photoList = [];
     try {
-      const photoListData = fs.readFileSync('server/photoList.json', 'utf8');
+      const photoListData = await fs.promises.readFile('server/photoList.json', 'utf8');  // Changed this line
       photoList = JSON.parse(photoListData);
     } catch (error) {
       console.error('Error reading photoList.json:', error);
     }
-    
+  
     const existingIndex = photoList.findIndex((entry) => entry.originalFilename === fileObject.originalFilename);
     
     if (existingIndex === -1) {
@@ -141,7 +150,7 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       console.log(`Updated file information for ${file.originalname} in photoList.json`);
     }
     
-    fs.writeFileSync('server/photoList.json', JSON.stringify(photoList, null, 2), 'utf8');
+    await fs.promises.writeFile('server/photoList.json', JSON.stringify(photoList, null, 2), 'utf8');
     
   }
 
