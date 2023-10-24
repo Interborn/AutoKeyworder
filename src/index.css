@@ -30,9 +30,3 @@
     width: 100%;
     border-radius: 5px;
 }
-
-#folderUpload-bgRemovalOption {
-    display: flex;
-    align-items: center;
-    gap: 10px
-}

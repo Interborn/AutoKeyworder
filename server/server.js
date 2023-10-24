@@ -12,6 +12,9 @@ const PORT = process.env.PORT || 3001;
 // Enable CORS to allow cross-origin requests
 app.use(cors());
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Configure multer for handling file uploads
 const upload = multer({
   storage: storage,
@@ -19,14 +22,15 @@ const upload = multer({
 });
 
 // Helper function to sanitize titles
-function sanitizeTitle(title) {
-  return title.replace(/[^\w]/g, '_');
+function sanitizeTitle(title, maxLength = 150) {
+  let sanitized = title.replace(/[^\w]/g, '_');
+  return sanitized.substring(0, maxLength);
 }
 
 // Function to call the Python script for keyword generation
-async function runPythonScript(scriptPath, imagePath) {
+async function runPythonScript(scriptPath, imagePath, useFilenames, upscaleImages) {
   return new Promise((resolve, reject) => {
-    exec(`python ${scriptPath} ${imagePath}`, (error, stdout, stderr) => {
+    exec(`python ${scriptPath} ${imagePath} ${useFilenames}`, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing the Python script: ${error}`);
         reject(error);
@@ -47,16 +51,35 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
   
   const uploadedFiles = req.files;
   console.log('Starting image upscaling...');
+
+  // Log form data other than files
+  console.log("Form Data:", req.body);
+
+  const { genTitle, genKeyword, genQuality, useFilenames, upscaleImages } = req.body;
+
+  // Initialize variables outside of conditionals
+  let keywords = 'n/a';
+  let title = 'n/a';
+  let qualityScore = 'n/a';
+  let sanitizedTitle = '';
   
   for (const file of uploadedFiles) {
     const imagePath = `./server/uploads/${file.originalname}`;
     
-    const keywords = await runPythonScript('./server/getKeywords.py', imagePath);
-    const qualityScore = await runPythonScript('./server/getQuality.py', imagePath);
-    const title = await runPythonScript('./server/getTitle.py', imagePath);
+    if (genKeyword === "true") {
+      keywords = await runPythonScript('./server/getKeywords.py', imagePath);
+    } 
+    if (genQuality === "true") {
+      qualityScore = await runPythonScript('./server/getQuality.py', imagePath);
+    }
+    if (genTitle === "true") {
+      title = await runPythonScript('./server/getTitle.py', imagePath, useFilenames);
+      sanitizedTitle = sanitizeTitle(title);
+    }    
+    if (upscaleImages === "true") {
+      await upscaleImage(file, sanitizedTitle);
+    }
 
-    let sanitizedTitle = sanitizeTitle(title);
-    
     const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
     
     const fileObject = {
@@ -88,7 +111,6 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
     
     fs.writeFileSync('server/photoList.json', JSON.stringify(photoList, null, 2), 'utf8');
     
-    await upscaleImage(file, sanitizedTitle);
   }
 
   console.log('All file information updated in photoList.json');
