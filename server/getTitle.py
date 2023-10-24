@@ -4,7 +4,7 @@ from getKeywords import get_keywords
 
 # Initialize OpenAI settings
 openai.organization = "org-HTJL8DAqvtYJx8lhEuGYVme8"
-openai.api_key = "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"
+openai.api_key = "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"
 
 def generate_title(keywords, originalFilename):
     prompt = f"This image has the following keywords: {keywords} and was uploaded under the filename {originalFilename}. What would be a descriptive and marketable title (at least 5 words) for this image?"

@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const { fileFilter, storage, upscaleImages } = require('./imageFunctions');
+const { fileFilter, storage, upscaleImage } = require('./imageFunctions');
 const fs = require('fs');
 const { exec } = require('child_process');
 
@@ -17,6 +17,11 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
 });
+
+// Helper function to sanitize titles
+function sanitizeTitle(title) {
+  return title.replace(/[^\w]/g, '_');
+}
 
 // Function to call the Python script for keyword generation
 async function runPythonScript(scriptPath, imagePath) {
@@ -42,8 +47,7 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
   
   const uploadedFiles = req.files;
   console.log('Starting image upscaling...');
-  upscaleImages(uploadedFiles);
-
+  
   for (const file of uploadedFiles) {
     const imagePath = `./server/uploads/${file.originalname}`;
     
@@ -51,8 +55,10 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
     const qualityScore = await runPythonScript('./server/getQuality.py', imagePath);
     const title = await runPythonScript('./server/getTitle.py', imagePath);
 
+    let sanitizedTitle = sanitizeTitle(title);
+    
     const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-
+    
     const fileObject = {
       generatedFilename: title,
       originalFilename: file.originalname,
@@ -61,7 +67,7 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       filesize: fileSizeInMB + ' MB',
       filepath: `/uploads/${file.originalname}`,
     };
-
+    
     let photoList = [];
     try {
       const photoListData = fs.readFileSync('server/photoList.json', 'utf8');
@@ -69,9 +75,9 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
     } catch (error) {
       console.error('Error reading photoList.json:', error);
     }
-
+    
     const existingIndex = photoList.findIndex((entry) => entry.originalFilename === fileObject.originalFilename);
-
+    
     if (existingIndex === -1) {
       photoList.push(fileObject);
       console.log(`Added file information for ${file.originalname} to photoList.json`);
@@ -79,8 +85,10 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       photoList[existingIndex] = fileObject;  // Update the existing object
       console.log(`Updated file information for ${file.originalname} in photoList.json`);
     }
-
+    
     fs.writeFileSync('server/photoList.json', JSON.stringify(photoList, null, 2), 'utf8');
+    
+    await upscaleImage(file, sanitizedTitle);
   }
 
   console.log('All file information updated in photoList.json');

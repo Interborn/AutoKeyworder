@@ -31,33 +31,29 @@ const storage = multer.diskStorage({
 });
 
 // Function to upscale multiple images
-async function upscaleImages(uploadedFiles) {
-  for (let index = 0; index < uploadedFiles.length; index++) {
-    const file = uploadedFiles[index];
-    const inputPath = `.\\server\\uploads\\${file.originalname}`;
-    const outputPath = `.\\server\\upscaled\\output_${index + 1}.jpg`;
-    
-    // Upscale the image
-    await new Promise((resolve, reject) => {
-      const executablePath = path.join(__dirname, '..', 'model', 'realesrgan-ncnn-vulkan');
-      const cmd = `${executablePath} -i ${inputPath} -o ${outputPath}`;
+async function upscaleImage(file, title) {
+  const inputPath = `.\\server\\uploads\\${file.originalname}`;
+  const outputPath = `.\\server\\upscaled\\${title}.jpg`;
 
-      console.log(`Upscaling Image: ${file.originalname}`);
-      
-      exec(cmd, (error, stdout, stderr) => {
-        if (error) {
-          console.error(`Error executing the command: ${error}`);
-          reject(error);
-        } else {
-          console.log(`stdout: ${stdout}`);
-          console.error(`stderr: ${stderr}`);
-          console.log(`Upscale Complete: ${file.originalname}`);
-          resolve();
-        }
-      });
+  // Upscale the image
+  return new Promise((resolve, reject) => {
+    const executablePath = path.join(__dirname, '..', 'model', 'realesrgan-ncnn-vulkan');
+    const cmd = `${executablePath} -i ${inputPath} -o ${outputPath}`;
+
+    console.log(`Upscaling Image: ${file.originalname}`);
+    
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error executing the command: ${error}`);
+        reject(error);
+      } else {
+        console.log(`stdout: ${stdout}`);
+        console.error(`stderr: ${stderr}`);
+        console.log(`Upscale Complete: ${file.originalname}`);
+        resolve();
+      }
     });
-  }
-  console.log('All image upscaling completed.');
+  });
 }
 
 
@@ -65,5 +61,5 @@ async function upscaleImages(uploadedFiles) {
 module.exports = {
   fileFilter,
   storage,
-  upscaleImages,
+  upscaleImage,
 };
