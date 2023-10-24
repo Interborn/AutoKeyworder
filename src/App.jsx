@@ -3,10 +3,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSquare as uncheckedSquare } from '@fortawesome/free-regular-svg-icons';
 import { faCheckSquare as checkedSquare } from '@fortawesome/free-regular-svg-icons';
 import { library } from '@fortawesome/fontawesome-svg-core';
+import React, { useState } from 'react';
 
 library.add(uncheckedSquare, checkedSquare);
 
 function App() {
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const serverOrigin = `${window.location.protocol}//${window.location.hostname}:3001`;
   
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,10 +22,15 @@ function App() {
       });
   
       if (response.ok) {
-        console.log('Folder uploaded successfully');
-        // Additional logic here
-      } else {
-        console.log('Failed to upload folder');
+        if (response.ok) {
+          console.log('Folder uploaded successfully');
+          const text = await response.text(); // get the response body
+          console.log("Server Response:", text);
+          // Fetch updated photoList.json
+          const photoListResponse = await fetch('http://localhost:3001/photoList');
+          const newPhotoList = await photoListResponse.json();
+          setUploadedFiles(newPhotoList);
+        }
       }
     } catch (error) {
       console.error('There was a problem with the upload:', error);
@@ -85,7 +93,17 @@ function App() {
       </div>
 
       <div className="w-[100%] flex justify-center;">
-        
+        <ul id="liveLookList">
+          {uploadedFiles.map((file, index) => (
+            <li key={index}>
+              <img src={`${serverOrigin}/upscaled/${file.sanitizedTitle}.jpg`} alt={file.generatedFilename} width="100" height="100" />
+              <span>Title: {file.generatedFilename}</span>
+              <span>Size: {file.filesize}</span>
+              <span>Quality Score: {file.qualityScore}</span>
+              <span>Keywords: {file.keywords}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
     </main>

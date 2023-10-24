@@ -10,10 +10,20 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Enable CORS to allow cross-origin requests
-app.use(cors());
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Implement your logic here to allow or disallow origins
+    callback(null, true);
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/upscaled', express.static('server/upscaled'));
 
 // Configure multer for handling file uploads
 const upload = multer({
@@ -23,8 +33,18 @@ const upload = multer({
 
 // Helper function to sanitize titles
 function sanitizeTitle(title, maxLength = 150) {
-  let sanitized = title.replace(/[^\w]/g, '_');
-  return sanitized.substring(0, maxLength);
+  let sanitized = title.replace(/[^\w]/g, '-'); // Replace non-word characters with hyphens
+  sanitized = sanitized.replace(/-{2,}/g, '-'); // Replace consecutive hyphens with a single hyphen
+  
+  // Remove starting and ending hyphens if they exist
+  if (sanitized.startsWith('-')) {
+    sanitized = sanitized.substring(1);
+  }
+  if (sanitized.endsWith('-')) {
+    sanitized = sanitized.substring(0, sanitized.length - 1);
+  }
+
+  return sanitized.substring(0, maxLength); // Limit the length of the title
 }
 
 // Function to call the Python script for keyword generation
@@ -44,6 +64,16 @@ async function runPythonScript(scriptPath, imagePath, useFilenames, upscaleImage
 app.get('/', (req, res) => {
   console.log('Request received: GET /');
   res.send('Hello, world!');
+});
+
+app.get('/photoList', (req, res) => {
+  try {
+    const photoListData = fs.readFileSync('server/photoList.json', 'utf8');
+    res.status(200).json(JSON.parse(photoListData));
+  } catch (error) {
+    console.error('Error reading photoList.json:', error);
+    res.status(500).send('Error reading photoList.json');
+  }
 });
 
 app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
@@ -89,6 +119,8 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       qualityScore: qualityScore,
       filesize: fileSizeInMB + ' MB',
       filepath: `/uploads/${file.originalname}`,
+      upscaledFilepath: `/upscaled/${sanitizedTitle}.jpg`,
+      sanitizedTitle: sanitizedTitle,
     };
     
     let photoList = [];
