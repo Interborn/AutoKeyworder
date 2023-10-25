@@ -78,6 +78,37 @@ app.get('/photoList', async (req, res) => {  // Added async
   }
 });
 
+app.post('/update', async (req, res) => {
+  console.log('Request received: POST /update');
+
+  const updatedData = req.body;
+  
+  try {
+    const photoListData = await fs.promises.readFile('server/photoList.json', 'utf8');
+    let photoList = JSON.parse(photoListData);
+
+    // Update the entries in photoList with the new data from updatedData
+    for (const updatedFile of updatedData) {
+      const index = photoList.findIndex(file => file.originalFilename === updatedFile.originalFilename);
+      if (index !== -1) {
+        // Update only the specified fields instead of overwriting the entire object
+        photoList[index].generatedFilename = updatedFile.generatedFilename;
+        photoList[index].keywords = updatedFile.keywords;
+      }
+    }
+
+    // Write the updated photoList back to photoList.json
+    await fs.promises.writeFile('server/photoList.json', JSON.stringify(photoList, null, 2), 'utf8');
+    
+    console.log('photoList.json updated successfully');
+    res.status(200).send('photoList.json updated successfully');
+
+  } catch (error) {
+    console.error('Error updating photoList.json:', error);
+    res.status(500).send('Error updating photoList.json');
+  }
+});
+
 app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
   console.log('Request received: POST /uploads');
   

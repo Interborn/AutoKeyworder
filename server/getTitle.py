@@ -3,7 +3,8 @@ import sys
 from getKeywords import get_keywords
 
 # Initialize OpenAI settings
-
+openai.organization = "org-HTJL8DAqvtYJx8lhEuGYVme8"
+openai.api_key = "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"
 
 def generate_title(keywords, originalFilename, prompt_template):
     response = openai.Completion.create(
