@@ -123,9 +123,9 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
   for (const file of uploadedFiles) {
     const imagePath = `./server/uploads/${file.originalname}`;
     let sanitizedTitle = '';
-    let keywords = 'n/a';
-    let title = 'n/a';
-    let qualityScore = 'n/a';
+    let keywords = '';
+    let title = file.originalname.substring(0, file.originalname.length - 4);;
+    let qualityScore = '';
     
     if (genKeyword === "true") {
       keywords = await runPythonScript('./server/getKeywords.py', imagePath);

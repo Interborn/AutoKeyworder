@@ -138,7 +138,7 @@ function App() {
 
       <form id="jsonEditor-formBody" onSubmit={handleJsonEditorSubmit} encType="multipart/form-data" className="flex flex-col items-center gap-4">
         <div className="w-[100%] flex justify-center">
-          <ul id="liveLookList" className="flex flex-col w-full h-full gap-5">
+          <ul id="liveLookList" className="flex flex-wrap w-full h-full gap-5">
             {uploadedFiles.map((file, index) => {
               // Debug: Print out the image URL
               const imageUrl = 
@@ -148,7 +148,7 @@ function App() {
               return (
                 <li key={index} className="flex gap-5 mx-5">
                   <div className="w-full max-w-[360px]">
-                    <img src={imageUrl} alt={file.generatedFilename} className="object-cover w-full h-full max-w-[360px] max-h-[230px] -mb-[1.38em] rounded-md" />
+                    <img src={imageUrl} alt={file.generatedFilename} className="object-cover w-full h-full max-w-[300px] max-h-[200px] -mb-[1.38em] rounded-md" />
 
                     <div className="flex justify-between w-full">
                       <span className="bg-white pl-1 pr-2 rounded-tr-md">
@@ -178,7 +178,10 @@ function App() {
             })}
           </ul>
         </div>
-        <input id="jsonEditor-submitButton" className="w-[200px] bg-purple-700 text-white rounded-sm my-4 py-1" type="submit" value="Update" />
+        <div className="flex gap-5">
+          <input id="jsonEditor-submitButton" className="w-[260px] bg-purple-700 text-white rounded-sm my-4 py-1" type="submit" value="Update" />
+          <input id="downloadAdobeDataSubmit" className="w-[260px] bg-purple-700 text-white rounded-sm my-4 py-1" type="submit" value="Download CSV & Images" />
+        </div>
       </form>
 
     </main>

@@ -4,7 +4,7 @@ from getKeywords import get_keywords
 
 # Initialize OpenAI settings
 openai.organization = "org-HTJL8DAqvtYJx8lhEuGYVme8"
-openai.api_key = "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"
+openai.api_key = "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"
 
 def generate_title(keywords, originalFilename, prompt_template):
     response = openai.Completion.create(
@@ -28,9 +28,9 @@ if __name__ == "__main__":
         prompt_template = "This image has the following keywords: " + ', '.join(keywords)
         
         if use_filenames == "true":
-            prompt_template += f" and was uploaded under the filename {original_filename}. What would be a descriptive and marketable title (at least 5 words) for this image?"
+            prompt_template += f" and was uploaded under the filename {original_filename}. What would be a descriptive and marketable title (about 120 characters) for this image?"
         else:
-            prompt_template += ". What would be a descriptive and marketable title (at least 5 words) for this image?"
+            prompt_template += ". What would be a descriptive and marketable title (about 120 characters) for this image?"
         
         title = generate_title(keywords, original_filename, prompt_template)
         print(f"{title}")
