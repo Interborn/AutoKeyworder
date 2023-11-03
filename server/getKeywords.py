@@ -16,7 +16,7 @@ def get_keywords(image_path, client_id, client_secret):
     if 'keywords' not in response_data:
         return None, None, response.text
 
-    return ', '.join([x['keyword'] for x in response_data['keywords']]), None, None
+    return '; '.join([x['keyword'] for x in response_data['keywords']]), None, None
 
 if __name__ == "__main__":
     image_path = sys.argv[1]
