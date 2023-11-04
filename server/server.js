@@ -130,7 +130,7 @@ app.get('/generate-csv', async (req, res) => {
     const json2csvParser = new Parser({ fields });
 
     // Define max records per CSV, excluding header
-    const maxRecordsPerCSV = 2;
+    const maxRecordsPerCSV = 95;
 
     // Get the latest CSV file index and record count
     let { currentCSVIndex, currentRecordCount } = await getLatestCsvFileInfo(csvDir, baseFilename);
