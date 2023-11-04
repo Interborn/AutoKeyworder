@@ -1,11 +1,6 @@
 import "./index.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSquare as uncheckedSquare } from '@fortawesome/free-regular-svg-icons';
-import { faCheckSquare as checkedSquare } from '@fortawesome/free-regular-svg-icons';
-import { library } from '@fortawesome/fontawesome-svg-core';
 import React, { useState, useEffect } from 'react';
 
-library.add(uncheckedSquare, checkedSquare);
 
 function App() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -30,6 +25,43 @@ function App() {
     setEditedFiles(updatedFiles);
   };
 
+  const generateCsvFile = async () => {
+    try {
+      const response = await fetch(`${serverOrigin}/generate-csv`);
+      if (response.ok) {
+        console.log('CSV file generated successfully.');
+      } else {
+        console.error('Failed to generate CSV file.');
+      }
+    } catch (error) {
+      console.error('Error generating CSV file:', error);
+    }
+  };
+
+  const downloadRecords = async () => {
+    try {
+      const response = await fetch(`${serverOrigin}/download-records`);
+      if (response.ok) {
+        // Retrieve the binary blob from the response
+        const blob = await response.blob();
+        // Create a link element and trigger download
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'records.zip';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl); // Clean up the URL object
+        console.log('Records downloaded successfully.');
+      } else {
+        console.error('Failed to download records.');
+      }
+    } catch (error) {
+      console.error('Error downloading records:', error);
+    }
+  };
+  
   const handleKeywordsChange = (index, event) => {
       const updatedFiles = [...editedFiles];
       updatedFiles[index].editedKeywords = event.target.value;
@@ -179,8 +211,9 @@ function App() {
           </ul>
         </div>
         <div className="flex gap-5">
-          <input id="jsonEditor-submitButton" className="w-[260px] bg-purple-700 text-white rounded-sm my-4 py-1" type="submit" value="Update" />
-          <input id="downloadAdobeDataSubmit" className="w-[260px] bg-purple-700 text-white rounded-sm my-4 py-1" type="submit" value="Download CSV & Images" />
+          <input id="jsonEditor-submitButton" className="w-[200px] bg-purple-700 text-white rounded-sm my-4 py-1" type="submit" value="Update" />
+          <input id="generateAdobeDataSubmit" className="w-[200px] bg-purple-700 text-white rounded-sm my-4 py-1" type="button" value="Generate CSV" onClick={generateCsvFile} />
+          <input id="recordDownloadSubmit" className="w-[200px] bg-purple-700 text-white rounded-sm my-4 py-1" type="button" value="Download" onClick={downloadRecords} />
         </div>
       </form>
 

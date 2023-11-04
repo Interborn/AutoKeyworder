@@ -1,10 +1,14 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
+const archiver = require('archiver');
 const { fileFilter, storage, upscaleImage } = require('./imageFunctions');
 const fs = require('fs');
 const { exec } = require('child_process');
 const path = require('path');
+const { Parser } = require('json2csv');
+const util = require('util');
+const copyFile = util.promisify(fs.copyFile);
 
 // Create an Express app
 const app = express();
@@ -83,6 +87,144 @@ app.get('/photoList', async (req, res) => {  // Added async
   }
 });
 
+// Helper function to get the latest CSV index and count
+async function getLatestCsvFileInfo(csvDir, baseFilename) {
+  let currentCSVIndex = -1;
+  let currentRecordCount = 0;
+  
+  try {
+    const files = await fs.promises.readdir(csvDir);
+    const csvFiles = files
+      .filter(file => file.startsWith(baseFilename) && file.endsWith('.csv'))
+      .sort();
+    
+    if (csvFiles.length > 0) {
+      const latestFile = csvFiles[csvFiles.length - 1];
+      currentCSVIndex = parseInt(latestFile.match(/_(\d+)\.csv$/)[1]);
+      
+      const latestFileContents = await fs.promises.readFile(path.join(csvDir, latestFile), 'utf8');
+      currentRecordCount = latestFileContents.trim().split('\n').length - 1; // Subtract header line
+    }
+  } catch (error) {
+    console.error('Error getting the latest CSV file info:', error);
+  }
+
+  return { currentCSVIndex, currentRecordCount };
+}
+
+app.get('/generate-csv', async (req, res) => {
+  try {
+    // Read the existing photo list
+    const photoListData = await fs.promises.readFile('server/photoList.json', 'utf8');
+    const photoList = JSON.parse(photoListData);
+
+    // Ensure the directory exists before writing the file
+    const csvDir = path.join(__dirname, 'batchBarn', 'csvFiles');
+    await fs.promises.mkdir(csvDir, { recursive: true });
+
+    // Fields for the CSV
+    const fields = ['upscaledFilename', 'generatedFilename', 'keywords', 'categoryNumber'];
+    const baseFilename = 'adobeMetadata_';
+    
+    // Initialize CSV parser
+    const json2csvParser = new Parser({ fields });
+
+    // Define max records per CSV, excluding header
+    const maxRecordsPerCSV = 2;
+
+    // Get the latest CSV file index and record count
+    let { currentCSVIndex, currentRecordCount } = await getLatestCsvFileInfo(csvDir, baseFilename);
+    let currentCSVFilePath;
+
+    if (currentCSVIndex === -1 || currentRecordCount >= maxRecordsPerCSV) {
+      // If no file exists or the latest file is full, create a new one
+      currentCSVIndex++;
+      currentRecordCount = 0; // Reset record count for the new file
+    }
+    currentCSVFilePath = path.join(csvDir, `${baseFilename}${currentCSVIndex}.csv`);
+
+    for (const record of photoList) {
+      if (currentRecordCount >= maxRecordsPerCSV) {
+        // Move to the next CSV file
+        currentCSVIndex++;
+        currentCSVFilePath = path.join(csvDir, `${baseFilename}${currentCSVIndex}.csv`);
+        currentRecordCount = 0; // Reset record count for the new file
+      }
+    
+      const csvData = json2csvParser.parse([record], { header: currentRecordCount === 0 });
+    
+      if (currentRecordCount === 0) {
+        // If it's the start of a new CSV, write with header
+        await fs.promises.writeFile(currentCSVFilePath, csvData);
+      } else {
+        // If appending, ensure to add newline and skip header
+        await fs.promises.appendFile(currentCSVFilePath, '\n' + csvData.split('\n')[1]);
+      }
+    
+      currentRecordCount++; // Increment after each record is processed
+    
+      const destinationImageDir = path.join(__dirname, 'batchBarn', 'batchImages', `adobeMetadata_${currentCSVIndex}`);
+      await fs.promises.mkdir(destinationImageDir, { recursive: true });
+      const sourceImagePath = path.join(__dirname, 'upscaled', record.upscaledFilename);
+      const destinationImagePath = path.join(destinationImageDir, record.upscaledFilename);
+      
+      // Check if source image exists
+      if (fs.existsSync(sourceImagePath)) {
+        // If the source image exists, proceed with copying
+        console.log(`Copying from ${sourceImagePath} to ${destinationImagePath}`);
+        await copyFile(sourceImagePath, destinationImagePath);
+        console.log(`Copied ${record.upscaledFilename} successfully.`);
+      } else {
+        // If the source image does not exist, log an error
+        console.error(`Source image not found at ${sourceImagePath}`);
+      }      
+    }
+
+    console.log('CSV file(s) created/updated successfully.');
+    res.status(200).send('CSV file(s) created/updated successfully.');
+
+  } catch (error) {
+    console.error('Error generating CSV file:', error);
+    res.status(500).send('Error generating CSV file');
+  }
+});
+
+app.get('/download-records', async (req, res) => {
+  // Create a zip archive using archiver
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  // Set the archive name
+  const archiveName = `records_${Date.now()}.zip`;
+  res.attachment(archiveName);
+
+  // Pipe the archive to the response
+  archive.pipe(res);
+
+  try {
+    const csvDir = path.join(__dirname, 'batchBarn', 'csvFiles');
+    const batchImagesDir = path.join(__dirname, 'batchBarn', 'batchImages');
+
+    // Get all CSV files
+    const csvFiles = await fs.promises.readdir(csvDir);
+
+    for (const file of csvFiles) {
+      if (path.extname(file) === '.csv') {
+        // Add CSV file to the archive
+        archive.file(path.join(csvDir, file), { name: file });
+
+        // Add associated image directory to the archive
+        let imageFolder = path.basename(file, '.csv');
+        archive.directory(path.join(batchImagesDir, imageFolder), imageFolder);
+      }
+    }
+
+    // Finalize the archive (this is important to end the stream)
+    archive.finalize();
+  } catch (error) {
+    res.status(500).send(`Error creating zip file: ${error}`);
+  }
+});
+
 app.post('/update', async (req, res) => {
   console.log('Request received: POST /update');
 
@@ -158,7 +300,7 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       title = await runPythonScript('./server/getTitle.py', [imagePath, useFilenames]);
       sanitizedTitle = sanitizeTitle(title);
     }
-const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+    const fileSizeInMB = (file.size / (1024 * 1024)).toFixed(2);
     
     const fileObject = {
       generatedFilename: title,
