@@ -16,7 +16,12 @@ def generate_title(keywords, originalFilename, prompt_template):
 
 if __name__ == "__main__":
     image_path = sys.argv[1]
-    use_filenames = sys.argv[2]
+    
+    # Initialize use_filenames with a default value
+    use_filenames = "false"
+    if len(sys.argv) > 2:
+        use_filenames = sys.argv[2]
+    
     original_filename = image_path.split('/')[-1]
     client_id = 'mvdpZVHaT4sG1pfAVFy5qwPw'
     client_secret = 'uZZV87sRWVgHXe6dg5nSOst10lvFg8FwJqU5H7wkojoVE9Oc'

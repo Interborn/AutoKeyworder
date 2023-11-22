@@ -12,21 +12,79 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    width: 70%;
-    max-width: 800px;
-    padding: 45px 40px;
-    border: 1px solid rgb(132, 62, 183);
-    border-radius: 3px;
 }
 
-#folderUpload-inputButton {
-    margin: 0px !important;
+#bg-wrap {
+    background-image: linear-gradient(180deg,#a5a5a538 4.32%,hsla(0,0%,100%,.1)),linear-gradient(270deg,rgba(0,255,253,.1),rgba(236,0,255,.1) 51.26%,rgba(255,103,0,.1));
 }
 
-#folderUpload-submitButton {
-    color: white;
-    background-color: rgb(132, 62, 183);
-    padding: 5px 5px;
-    width: 100%;
-    border-radius: 5px;
+.image-input {
+    transition: transform 0.5s ease-in-out;
+  }
+  .image-input.translate-y-0 {
+    transform: translateY(0);
+  }
+  .image-input.translate-y-full {
+    transform: translateY(100%);
+  }
+
+.bg-custom-gradient {
+  background: linear-gradient(0deg, rgba(220,252,231,1) 0%, rgba(220,252,231,1) 25%, rgba(220,252,231,0) 75%, rgba(220,252,231,0) 100%);
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+
+  /* For Chrome, Safari, and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.max-h-0 {
+	max-height: 0;
+}
+
+.group:focus .group-focus\:max-h-40 {
+	max-height: 10rem;
+}
+
+
+/* Loader */
+.spinningLoader {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 180deg at 50% 50%,
+    rgba(81, 0, 255, 0) 0deg,
+    #4f46e5 360deg
+  );
+  animation: spin 2s infinite linear;
+}
+.spinningLoader::before {
+  content: "";
+  border-radius: 50%;
+  width: 80%;
+  height: 80%;
+  background-color: #eef2ff;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+.zoomedOriginal img {
+  transform: scale(2.5); /* Adjust the scale value as needed */
+  transition: transform 0.15s ease; /* Smooth transition for zoom effect */
+}
+
+.zoomedUpscaled img {
+  transform: scale(4); /* Adjust the scale value as needed */
+  transition: transform 0.15s ease; /* Smooth transition for zoom effect */
 }

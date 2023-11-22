@@ -21,7 +21,7 @@ def get_quality(image_path, client_id, client_secret):
 if __name__ == "__main__":
     image_path = sys.argv[1]
     client_id = 'mvdpZVHaT4sG1pfAVFy5qwPw'
-    client_secret = 'uZZV87sRWVgHXe6dg5nSOst10lvFg8FwJqU5H7wkojoVE9Oc'
+    client_secret = ''
     
     quality_score, error_code, error_text = get_quality(image_path, client_id, client_secret)
     if error_code:

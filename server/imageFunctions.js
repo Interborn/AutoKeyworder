@@ -32,16 +32,18 @@ const storage = multer.diskStorage({
 
 // Function to upscale multiple images
 async function upscaleImage(file, title) {
-  const inputPath = `.\\server\\uploads\\${file.originalname}`;
-  const outputPath = `.\\server\\upscaled\\${title}.jpg`;
+  // Assuming that your server.js is in the 'server' directory
+  // and your uploads and upscaled folders are also within the 'server' directory
+  const inputPath = path.join(__dirname, 'uploads', file.originalname);
+  const outputPath = path.join(__dirname, 'upscaled', `${title}.jpg`);
 
-  // Upscale the image
+  // Ensure the path to your executable is correct
+  const executablePath = path.join(__dirname, '..', 'model', 'realesrgan-ncnn-vulkan');
+  const cmd = `"${executablePath}" -i "${inputPath}" -o "${outputPath}"`;
+
+  console.log(`Upscaling Image: ${file.originalname}`);
+  
   return new Promise((resolve, reject) => {
-    const executablePath = path.join(__dirname, '..', 'model', 'realesrgan-ncnn-vulkan');
-    const cmd = `${executablePath} -i ${inputPath} -o ${outputPath}`;
-
-    console.log(`Upscaling Image: ${file.originalname}`);
-    
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error executing the command: ${error}`);

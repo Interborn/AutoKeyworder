@@ -9,6 +9,7 @@ const path = require('path');
 const { Parser } = require('json2csv');
 const util = require('util');
 const copyFile = util.promisify(fs.copyFile);
+const sizeOf = require('image-size');
 
 // Create an Express app
 const app = express();
@@ -281,7 +282,9 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       categoryResult = JSON.parse(categoryData);
       categoryNumber = categoryResult.category_number;
     }
-       
+
+    // Get the dimensions of the image
+    const originalDimensions = sizeOf(`./server/uploads/${file.originalname}`);
     
     // This block of code should come after the genKeyword processing
     if (genKeyword === "true") {
@@ -313,6 +316,8 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       upscaledFilename: '',
       sanitizedTitle: sanitizedTitle,
       categoryNumber: categoryNumber,
+      originalWidth: originalDimensions.width,
+      originalHeight: originalDimensions.height,
     };
     
     if (upscaleImages === "true") {
@@ -322,12 +327,15 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
       // Get the size of the upscaled image 
       const upscaledStats = await fs.promises.stat(`./server/upscaled/${upscaledName}.jpg`);
       const upscaledSizeInMB = (upscaledStats.size / (1024 * 1024)).toFixed(2);
+      const upscaledDimensions = sizeOf(`./server/upscaled/${upscaledName}.jpg`);
 
       // Update the fileObject
       fileObject.upscaledFilesize = upscaledSizeInMB + ' MB';
       fileObject.upscaledFilepath = `/upscaled/${upscaledName}.jpg`;
       fileObject.upscaledFilename = `${upscaledName}.jpg`;
       fileObject.categoryNumber = categoryResult.category_number;
+      fileObject.upscaledWidth = upscaledDimensions.width;
+      fileObject.upscaledHeight = upscaledDimensions.height;
     }
 
     // After assigning categoryResult and categoryNumber
