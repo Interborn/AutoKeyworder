@@ -6,8 +6,8 @@ const UpscaleInformationalPieces = () => {
           
         <div id="upscaleHome_pieces-header" className="flex flex-col items-center py-20">
         
-        <h3 className="font-bold text-[44px] text-white">Enterprise Solutions at Scale</h3>
-        <p className="font-bold text-[20px] text-white">Explore our suite of extended capabilities that ease up your regular workflows</p>
+        <h3 className="font-bold text-[44px] text-white">Photographic Features</h3>
+        <p className="font-bold text-[20px] text-white max-w-[60ch] text-center">Explore the features of our AI enhancement software that significantly increase your productivity!</p>
         
         </div>
         <div id="upscaleHome_pieces-top" className="w-full flex md:flex-row flex-col justify-center items-center md:gap-32">
@@ -17,8 +17,8 @@ const UpscaleInformationalPieces = () => {
         </div>
         
         <div className="flex flex-col justify-center">
-            <h4 className="font-bold text-[44px] text-white">Bulk Transformation</h4>
-            <p className="max-w-[52ch] text-[20px] text-white">No more switching back and forth to transform images. Experience bulk background removal on a single platform by uploading multiple images at once.</p>
+            <h4 className="font-bold text-[44px] text-white">Bulk Upscaling</h4>
+            <p className="max-w-[52ch] text-[20px] text-white">No more switching back and forth to transform images. Experience bulk image upscaling and video upscaling by uploading up to 95 files at a time!</p>
         </div>
         
         </div>
@@ -29,8 +29,8 @@ const UpscaleInformationalPieces = () => {
         </div>
         
         <div className="flex flex-col justify-center">
-            <h4 className="font-bold text-[44px] text-white">API Integration</h4>
-            <p className="max-w-[52ch] text-[20px] text-white">Speed up your workflows and enhance productivity by seamlessly integrating our APIs into your existing organization.</p>
+            <h4 className="font-bold text-[44px] text-white">Side-by-Side Comparison</h4>
+            <p className="max-w-[52ch] text-[20px] text-white">Compare your images to each other with our side-by-side view! Use a magnified tooltip to explore true quality enhancement!</p>
         </div>
         
         </div>

@@ -1,1 +1,36 @@
-[]
+[
+  {
+    "generatedFilename": "Landscape-Color",
+    "originalFilename": "Landscape-Color.jpg",
+    "keywords": "",
+    "qualityScore": "",
+    "filesize": "1.34 MB",
+    "filepath": "/uploads/Landscape-Color.jpg",
+    "upscaledFilepath": "/upscaled/Landscape-Color.jpg",
+    "upscaledFilename": "Landscape-Color.jpg",
+    "sanitizedTitle": "",
+    "categoryNumber": "",
+    "originalWidth": 1601,
+    "originalHeight": 664,
+    "upscaledFilesize": "10.82 MB",
+    "upscaledWidth": 6404,
+    "upscaledHeight": 2656
+  },
+  {
+    "generatedFilename": "MicrosoftTeams-image551ad57e01403f080a9df51975ac40b6efba82553c323a742b42b1c71c1e45f1",
+    "originalFilename": "MicrosoftTeams-image551ad57e01403f080a9df51975ac40b6efba82553c323a742b42b1c71c1e45f1.jpg",
+    "keywords": "",
+    "qualityScore": "",
+    "filesize": "0.09 MB",
+    "filepath": "/uploads/MicrosoftTeams-image551ad57e01403f080a9df51975ac40b6efba82553c323a742b42b1c71c1e45f1.jpg",
+    "upscaledFilepath": "/upscaled/MicrosoftTeams-image551ad57e01403f080a9df51975ac40b6efba82553c323a742b42b1c71c1e45f1.jpg",
+    "upscaledFilename": "MicrosoftTeams-image551ad57e01403f080a9df51975ac40b6efba82553c323a742b42b1c71c1e45f1.jpg",
+    "sanitizedTitle": "",
+    "categoryNumber": "",
+    "originalWidth": 1024,
+    "originalHeight": 1024,
+    "upscaledFilesize": "5.96 MB",
+    "upscaledWidth": 4096,
+    "upscaledHeight": 4096
+  }
+]

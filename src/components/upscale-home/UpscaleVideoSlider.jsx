@@ -42,7 +42,7 @@ const UpscaleVideoSlider = () => {
             
         </div>
         
-        <div id="upscaleHome_videoSlider-selectSlider" className="flex overflow-x-auto gap-28 max-w-[60vw] hide-scrollbar text-white my-16 border-b-[1px] border-gray-500" ref={sliderVideoRef}>
+        <div id="upscaleHome_videoSlider-selectSlider" className="flex overflow-x-auto gap-28 max-w-[90vw] lg:max-w-[70vw] hide-scrollbar text-white my-16 border-b-[1px] border-gray-500" ref={sliderVideoRef}>
         {videoItems.map((item, index) => (
             <p
             key={index}

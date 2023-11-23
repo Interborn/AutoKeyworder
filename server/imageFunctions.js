@@ -35,7 +35,8 @@ async function upscaleImage(file, title) {
   // Assuming that your server.js is in the 'server' directory
   // and your uploads and upscaled folders are also within the 'server' directory
   const inputPath = path.join(__dirname, 'uploads', file.originalname);
-  const outputPath = path.join(__dirname, 'upscaled', `${title}.jpg`);
+  const originalExtension = path.extname(file.originalname);
+  const outputPath = path.join(__dirname, 'upscaled', `${title}${originalExtension}`);
 
   // Ensure the path to your executable is correct
   const executablePath = path.join(__dirname, '..', 'model', 'realesrgan-ncnn-vulkan');

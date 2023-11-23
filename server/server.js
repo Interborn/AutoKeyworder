@@ -322,18 +322,24 @@ app.post('/uploads', upload.array('folderUpload', 100), async (req, res) => {
     
     if (upscaleImages === "true") {
       let upscaledName = genTitle === "true" ? sanitizedTitle : path.parse(file.originalname).name;
+      const originalExtension = path.extname(file.originalname);
+      const upscaledFilename = `${upscaledName}${originalExtension}`;
+    
+      console.log(`Upscaling image: ${imagePath}`);
       await upscaleImage(file, upscaledName);
+    
+      console.log(`Looking for upscaled image at: ./server/upscaled/${upscaledFilename}`);
 
-      // Get the size of the upscaled image 
-      const upscaledStats = await fs.promises.stat(`./server/upscaled/${upscaledName}.jpg`);
+      // Use the constructed filename for the upscaled file
+      const upscaledPath = `./server/upscaled/${upscaledFilename}`;
+      const upscaledStats = await fs.promises.stat(upscaledPath);
       const upscaledSizeInMB = (upscaledStats.size / (1024 * 1024)).toFixed(2);
-      const upscaledDimensions = sizeOf(`./server/upscaled/${upscaledName}.jpg`);
+      const upscaledDimensions = sizeOf(upscaledPath);
 
       // Update the fileObject
       fileObject.upscaledFilesize = upscaledSizeInMB + ' MB';
-      fileObject.upscaledFilepath = `/upscaled/${upscaledName}.jpg`;
-      fileObject.upscaledFilename = `${upscaledName}.jpg`;
-      fileObject.categoryNumber = categoryResult.category_number;
+      fileObject.upscaledFilepath = `/upscaled/${upscaledFilename}`;
+      fileObject.upscaledFilename = upscaledFilename;
       fileObject.upscaledWidth = upscaledDimensions.width;
       fileObject.upscaledHeight = upscaledDimensions.height;
     }

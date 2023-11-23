@@ -1,41 +1,21 @@
-import React, { useState } from 'react'
-import UpscaleInput from './UpscaleInput'
+import React from 'react';
+import UpscaleHeroItem from './UpscaleHeroItem';
 
 const UpscaleHomeHero = () => {
 
-  const [isUploadClicked, setIsUploadClicked] = useState(false);
-  const [editedFiles, setEditedFiles] = useState([]);
-  const [isUpscaled, setIsUpscaled] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [isTitleSet, setIsTitleSet] = useState(false);
-  const [isKeywordsSet, setIsKeywordsSet] = useState(false);
-  const [isQualitySet, setIsQualitySet] = useState(false);
-  
-  const onUploadClicked = (files, upscaled, title, keywords, quality) => {
-      setUploadedFiles(files);
-      setIsUpscaled(upscaled);
-      setIsUploadClicked(true);
-      setIsTitleSet(title);
-      setIsKeywordsSet(keywords);
-      setIsQualitySet(quality);
-  };
-
   return (
-    <div id="upscaleHome_hero" className="w-full md:flex-row flex-col-reverse flex justify-around items-center bg-stone-950 px-4 gap-8">
+    <div id="upscaleHome_hero" className="w-full lg:flex-row flex-col-reverse flex justify-around items-center bg-stone-950 px-4 gap-8 md:py-[5.5em] py-[2em]">
           
       <div id="upscaleHome_hero-left" className="w-full flex justify-center">
         
-          <video autoPlay loop className="w-full max-w-[600px]">
-              <source src="https://cdn.pixelbin.io/v2/dummy-cloudname/original/erasebg_assets/upload_page/EraseBG_Hero.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-          </video>
+        <UpscaleHeroItem />
         
       </div>
-      <div id="upscaleHome_hero-right" className="w-full my-16">
+      <div id="upscaleHome_hero-right" className="w-full">
 
         <div>
-            <h1 className="text-white font-bold text-[56px] max-w-[650px] leading-tight">Upscale Image & Video Quality For <span className="bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-400 to-indigo-900  text-transparent bg-clip-text">Free</span></h1>
-            <h3 className="text-white text-[28px] max-w-[650px] my-4">Experience accurate background removal. Sign up today to avail your first 3 credits for free!</h3>
+            <h1 className="text-white font-bold text-[56px] max-w-[665px] leading-tight -mb-4">Upscale Images & Videos with AI for <span className="bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-400 to-indigo-900  text-transparent bg-clip-text">Free</span></h1>
+            <h3 className="text-white text-[24px] max-w-[650px] my-8">Leverage AI technology to enhance your image & video quality. Sign up today to upscale your images & videos for free!</h3>
         </div>
         
         <div className={`flex lg:flex-row flex-col w-full transition-container $justify-start lg:max-w-[650px]`}>

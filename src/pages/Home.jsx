@@ -2,7 +2,7 @@ import React from 'react'
 import NavBar from '../components/global/NavBar'
 import UpscaleHomeHero from '../components/upscale-home/UpscaleHomeHero'
 import UpscaleImageSlider from '../components/upscale-home/UpscaleImageSlider'
-import UpscaleVideoSlider from '../components/upscale-home/UpscaleVideoSlider'
+// import UpscaleVideoSlider from '../components/upscale-home/UpscaleVideoSlider'
 import UpscaleInformationalPieces from '../components/upscale-home/UpscaleInformationalPieces'
 import UpscaleBlog from '../components/upscale-home/UpscaleBlog'
 import OtherProducts from '../components/global/OtherProducts'
@@ -18,7 +18,7 @@ const Home = () => {
         <UpscaleHomeHero />
         <UpscaleImageSlider />
         <UpscaleInformationalPieces />
-        <UpscaleVideoSlider />
+        {/* <UpscaleVideoSlider /> */}
         <UpscaleBlog />
         <Guides />
         <OtherProducts />

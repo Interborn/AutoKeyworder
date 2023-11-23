@@ -4,7 +4,7 @@ import json
 
 # Initialize OpenAI settings
 openai.organization = "org-HTJL8DAqvtYJx8lhEuGYVme8"
-openai.api_key = ""
+openai.api_key = "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"
 
 # List of categories and their corresponding numbers
 categories = [
