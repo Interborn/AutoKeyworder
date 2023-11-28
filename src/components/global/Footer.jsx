@@ -28,21 +28,21 @@ const Footer = () => {
         </div>
         <div id="upscaleHome_footer-bottom" className="flex flex-col items-center w-full gap-6 rounded-t-3xl">
 
-        <div className="flex gap-10 pb-10 w-full justify-around max-w-[1250px]">
+        <div className="flex flex-col md:flex-row gap-10 pb-10 w-full justify-around max-w-[1250px] items-center">
             <div className="bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-400 to-indigo-900 p-[1px] w-full rounded-xl cursor-not-allowed text-stone-200 hover:opacity-50 max-w-[350px]">
-            <div className="bg-stone-950 w-full flex flex-col justify-center items-center text-center py-4 px-6 rounded-xl gap-8">
-                <h4 className="text-[22px] font-bold">AI Image & Video Upscaling</h4>
-            </div>
+                <div className="bg-stone-950 w-full flex flex-col justify-center items-center text-center py-4 px-6 rounded-xl gap-8">
+                    <h4 className="text-[22px] font-bold">AI Image & Video Upscaling</h4>
+                </div>
             </div>
             <div className="cursor-pointer text-stone-200 max-w-[350px] bg-gradient-to-r amber-400">
-            <div className="w-full flex flex-col justify-center items-center text-center py-4 px-6 rounded-xl gap-8 bg-amber-200 hover:bg-amber-300 text-amber-500 hover:text-amber-700">
-                <h4 className="text-[22px] font-bold ">AI Background Removal</h4>
-            </div>
+                <div className="w-full flex flex-col justify-center items-center text-center py-4 px-6 rounded-xl gap-8 bg-amber-200 hover:bg-amber-300 text-amber-500 hover:text-amber-700">
+                    <h4 className="text-[22px] font-bold ">AI Background Removal</h4>
+                </div>
             </div>
             <div className="cursor-pointer text-stone-200 max-w-[350px]">
-            <div className="w-full flex flex-col justify-center items-center text-center py-4 px-6 rounded-xl gap-8 bg-red-200 hover:bg-red-300 text-red-400 hover:text-red-600">
-                <h4 className="text-[22px] font-bold">Adobe Stock Metadata</h4>
-            </div>
+                <div className="w-full flex flex-col justify-center items-center text-center py-4 px-6 rounded-xl gap-8 bg-red-200 hover:bg-red-300 text-red-400 hover:text-red-600">
+                    <h4 className="text-[22px] font-bold">Adobe Stock Metadata</h4>
+                </div>
             </div>
             
         </div>

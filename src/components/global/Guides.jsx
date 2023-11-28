@@ -93,7 +93,7 @@ const Guides = () => {
   }
 
   return (
-    <div id="upscaleHome_guides" className="flex flex-col items-center bg-stone-950 gap-10 py-24 px-4">
+    <div id="upscaleHome_guides" className="flex flex-col items-center bg-stone-950 gap-10 py-[2em] px-4">
         <div id="upscaleHome_guides-optionsAndGuides" className="w-full flex flex-col items-center gap-4 max-w-[1300px]">
             <div id="upscaleHome_guides-optionsAndGuides-header" className="w-full flex justify-center">
                 <h3 className="text-[44px] font-bold text-white w-full max-w-[1250px]">Upscale Guides & More!</h3>
@@ -102,7 +102,7 @@ const Guides = () => {
                 {/* "Backgrounds" category button */}
                 <p
                 id="categoryButton"
-                className={`text-white font-bold px-5 py-1 rounded-md cursor-pointer ${
+                className={`text-white font-bold px-5 py-1 rounded-md cursor-pointer md:text-[16px] text-[14px] ${
                     selectedCategory === "how-to"
                     ? "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-300 to-indigo-800"
                     : "bg-stone-900 hover:bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] hover:from-sky-400 hover:to-indigo-900"
@@ -114,7 +114,7 @@ const Guides = () => {
                 {/* "Upscaling Info" category button */}
                 <p
                 id="categoryButton"
-                className={`text-white font-bold px-5 py-1 rounded-md cursor-pointer ${
+                className={`text-white font-bold px-5 py-1 rounded-md cursor-pointer md:text-[16px] text-[14px] ${
                     selectedCategory === "Upscaling Info"
                     ? "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-300 to-indigo-800"
                     : "bg-stone-900 hover:from-sky-400 hover:to-indigo-900 hover:bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]"
@@ -126,7 +126,7 @@ const Guides = () => {
                 {/* "Other Guides" category button */}
                 <p
                 id="categoryButton"
-                className={`text-white font-bold px-5 py-1 rounded-md cursor-pointer ${
+                className={`text-white font-bold px-5 py-1 rounded-md cursor-pointer md:text-[16px] text-[14px] ${
                     selectedCategory === "Other Guides"
                     ? "bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-300 to-indigo-800"
                     : "bg-stone-900 hover:from-sky-400 hover:to-indigo-900 hover:bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]"

@@ -13,7 +13,7 @@ const UpscaleImageSlide = ({category, imageOne, imageTwo}) => {
           backgroundPosition: 'center center',
         }}
         className='lg:rounded-xl'
-        boundsPadding={120}
+        boundsPadding={80}
       />
     </div>
   )

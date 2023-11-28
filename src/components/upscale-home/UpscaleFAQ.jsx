@@ -40,7 +40,7 @@ const UpscaleFAQ = () => {
   ];
 
   return (
-    <div id="upscaleHome_faqs" className="flex flex-col items-center bg-stone-950 gap-10 py-10 px-4">
+    <div id="upscaleHome_faqs" className="flex flex-col items-center bg-stone-950 gap-10 py-[2em] px-4">
         <div id="upscaleHome_faqs-questionsAndAnswers" className="flex flex-col items-center w-full gap-14">
             <div id="upscaleHome_faqs-questionsAndAnswers_header" className="flex flex-col items-center w-full gap-6">
             <h3 className="font-bold text-[44px] text-white"><span className="bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sky-400 to-indigo-900 text-transparent bg-clip-text">Frequently Asked Questions (FAQs)</span></h3>

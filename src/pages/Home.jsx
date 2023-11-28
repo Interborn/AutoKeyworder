@@ -20,9 +20,9 @@ const Home = () => {
         <UpscaleInformationalPieces />
         {/* <UpscaleVideoSlider /> */}
         <UpscaleBlog />
+        <UpscaleFAQ />
         <Guides />
         <OtherProducts />
-        <UpscaleFAQ />
         <UpscaleLetter />
       <Footer />
     </div>

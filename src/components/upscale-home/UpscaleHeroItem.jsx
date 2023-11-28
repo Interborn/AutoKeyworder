@@ -56,7 +56,8 @@ const UpscaleHeroItem = () => {
                     />
                 </div>
             </Atropos>
-            <p className="text-white font-mono">Hover to see it in action!</p>
+            <p className={`text-white font-mono md:flex hidden`}>Hover to see it in action!</p>
+            <p className={`text-white font-mono md:hidden flex`}>Touch to see it in action!</p>
         </div>
     );
 };

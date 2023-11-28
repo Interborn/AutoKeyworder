@@ -46,7 +46,7 @@ const UpscaleImageSlider = () => {
   }, [selected]);
 
   return (
-    <div id="upscaleHome_photoSlider" className="flex flex-col items-center bg-stone-950 md:pb-20 md:py-0 py-20">
+    <div id="upscaleHome_photoSlider" className="flex flex-col items-center bg-stone-950 md:pb-20 md:py-0 py-[2em]">
           
       <div id="upscaleHome_photoSlider-header" className="flex flex-col w-full items-center px-4">
         <h3 className="font-bold text-[44px] text-white">The Ultimate Image Upscaler Tool</h3>
